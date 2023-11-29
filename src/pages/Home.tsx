@@ -128,7 +128,7 @@ function Home() {
 
   return (
     <div className="home">
-      <h1>Chatter</h1>
+      <h1>Chat-App</h1>
       <div className="input">
         <Input
           setSend={setSend}
