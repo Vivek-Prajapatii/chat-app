@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, IconButton, TextField } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import "../styles/Input.scss";
+import "../styles/components/Input.scss";
 
 function Input(props: {
   setSend: Function;

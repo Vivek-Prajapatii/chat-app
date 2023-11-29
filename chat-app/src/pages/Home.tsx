@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Input from "../components/Input";
-import "../styles/Home.scss";
+import "../styles/pages/Home.scss";
 import View from "../components/View";
 
 function Home() {

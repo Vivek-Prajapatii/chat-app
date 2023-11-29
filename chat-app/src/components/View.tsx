@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/View.scss";
+import "../styles/components/View.scss";
 import {
   Avatar,
   FormControl,
@@ -13,6 +13,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { formatDate } from "../utils/formatDate.util";
 import { MessageModel } from "../models/MessageModel";
+import Modal from "./modal/Modal";
 
 function View(props: {
   messages: MessageModel[];
@@ -32,9 +33,9 @@ function View(props: {
   const [sort, setSort] = useState<string>("Newer");
   const [checkedItems, setCheckedItems] = useState<MessageModel[]>([]);
   const [appearCheckbox, setAppearCheckbox] = useState<boolean>(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  console.log(checkedItems, deleteAllMsgs);
-
+  // handles the checkbox clicks
   const handleCheckboxChange = (message: MessageModel) => {
     const index = checkedItems?.findIndex(
       (checkedItem: MessageModel) => checkedItem.id === message.id
@@ -51,12 +52,13 @@ function View(props: {
     }
   };
 
+  console.log(checkedItems);
+
   // sorting the messages
   useEffect(() => {
     (function () {
       if (sort === "Newer") {
         const copiedArray = messages && JSON.parse(JSON.stringify(messages));
-        console.log(copiedArray);
         messages &&
           setSortedMessages(
             copiedArray.sort((a: any, b: any) =>
@@ -69,6 +71,35 @@ function View(props: {
     })();
   }, [messages, sort]);
 
+  // callback for on cancel click on modal
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  // callback for on yes click on modal
+  const handleYesClick = () => {
+    setModalOpen(false);
+    setDeleteAllMsgs(true);
+  };
+
+  if (isModalOpen) {
+    const message = "Are you sure you want to delete the selected messages?";
+    const yesPlaceholder = "Delete";
+
+    return (
+      <>
+        <Modal
+          message={message}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onYes={handleYesClick}
+          yesPlaceholder={yesPlaceholder}
+          noPlaceholder="Cancel"
+        />
+      </>
+    );
+  }
+
   return (
     <div className="view">
       <div className="delete-all-stack">
@@ -77,7 +108,7 @@ function View(props: {
             variant={"outlined"}
             onClick={() => {
               setCheckedItems([]);
-              setAppearCheckbox(!appearCheckbox)
+              setAppearCheckbox(!appearCheckbox);
             }}
           >
             Select
@@ -107,6 +138,9 @@ function View(props: {
           <Button
             variant={"outlined"}
             sx={{ color: "red", borderColor: "red", ml: 1 }}
+            onClick={() => {
+              checkedItems?.length > 0 && setModalOpen(true);
+            }}
           >
             Delete All
           </Button>
