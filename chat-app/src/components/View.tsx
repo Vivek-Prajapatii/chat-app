@@ -21,6 +21,8 @@ function View(props: {
   setMessageId: Function;
   setDeleteAllMsgs: Function;
   deleteAllMsgs: boolean;
+  setCheckedMessages: Function;
+  checkedMessages: MessageModel[];
 }) {
   const {
     messages,
@@ -28,37 +30,37 @@ function View(props: {
     setMessageId,
     setDeleteAllMsgs,
     deleteAllMsgs,
+    setCheckedMessages,
+    checkedMessages,
   } = props;
   const [sortedMessages, setSortedMessages] = useState<any>();
   const [sort, setSort] = useState<string>("Newer");
-  const [checkedItems, setCheckedItems] = useState<MessageModel[]>([]);
   const [appearCheckbox, setAppearCheckbox] = useState<boolean>(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
   // handles the checkbox clicks
   const handleCheckboxChange = (message: MessageModel) => {
-    const index = checkedItems?.findIndex(
+    const index = checkedMessages?.findIndex(
       (checkedItem: MessageModel) => checkedItem.id === message.id
     );
 
     if (index === -1) {
       // If the item is not in the array, add it
-      setCheckedItems([...checkedItems, message]);
+      setCheckedMessages([...checkedMessages, message]);
     } else {
       // If the item is already in the array, remove it
-      const updatedItems = [...checkedItems];
+      const updatedItems = [...checkedMessages];
       updatedItems.splice(index, 1);
-      setCheckedItems(updatedItems);
+      setCheckedMessages(updatedItems);
     }
   };
-
-  console.log(checkedItems);
 
   // sorting the messages
   useEffect(() => {
     (function () {
       if (sort === "Newer") {
-        const copiedArray = messages && JSON.parse(JSON.stringify(messages));
+        const copiedArray =
+          messages && JSON.parse(JSON.stringify(messages));
         messages &&
           setSortedMessages(
             copiedArray.sort((a: any, b: any) =>
@@ -80,6 +82,7 @@ function View(props: {
   const handleYesClick = () => {
     setModalOpen(false);
     setDeleteAllMsgs(true);
+    setAppearCheckbox(false);
   };
 
   if (isModalOpen) {
@@ -107,7 +110,7 @@ function View(props: {
           <Button
             variant={"outlined"}
             onClick={() => {
-              setCheckedItems([]);
+              setCheckedMessages([]);
               setAppearCheckbox(!appearCheckbox);
             }}
           >
@@ -139,7 +142,7 @@ function View(props: {
             variant={"outlined"}
             sx={{ color: "red", borderColor: "red", ml: 1 }}
             onClick={() => {
-              checkedItems?.length > 0 && setModalOpen(true);
+              checkedMessages?.length > 0 && setModalOpen(true);
             }}
           >
             Delete All
@@ -160,7 +163,7 @@ function View(props: {
                 ) : (
                   <>
                     <Checkbox
-                      checked={checkedItems.some(
+                      checked={checkedMessages.some(
                         (checkedItem: MessageModel) =>
                           checkedItem.id === message.id
                       )}
@@ -177,16 +180,18 @@ function View(props: {
                 <span>{message?.text}</span>
               </div>
               <div>
-                <IconButton
-                  onClick={() => {
-                    setDeleteMsg(true);
-                    setMessageId(message?.id);
-                  }}
-                >
-                  <DeleteIcon
-                    sx={{ width: "1.7rem", height: "1.7rem", color: "red" }}
-                  />
-                </IconButton>
+                {!appearCheckbox && (
+                  <IconButton
+                    onClick={() => {
+                      setDeleteMsg(true);
+                      setMessageId(message?.id);
+                    }}
+                  >
+                    <DeleteIcon
+                      sx={{ width: "1.7rem", height: "1.7rem", color: "red" }}
+                    />
+                  </IconButton>
+                )}
               </div>
             </div>
           );
